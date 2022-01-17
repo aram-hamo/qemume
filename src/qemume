@@ -1,0 +1,45 @@
+#!/bin/bash
+
+qemumeDir=~/.local/share/qemume/
+vmsDir=$qemumeDir/vms/
+mkdir -p $qemumeDir $vmsDir
+
+# main menu
+menu=`dialog --menu qemume 0 0 0 1 "Create VM" 2 "Launch VM" 3 "Delete VM" --stdout`
+
+createVM(){
+vmName=`dialog --inputbox "Name of The VM" 0 0 --stdout`
+while :
+do
+if [ ! -d "$vmsDir$vmName" ]; then
+  mkdir "$vmsDir$vmName"
+  break
+else
+  vmName=`dialog --inputbox "$vmName already exists please type new vm name" 0 0 --stdout`
+fi
+done
+driveSize=`dialog --inputbox "Drive Size in Gigabyte" 0 0 10 --stdout`
+ramSize=`dialog --inputbox "RAM Size in Gigabyte" 0 0 1 --stdout`
+cores=`dialog --inputbox "Number of Physical Cores" 0 0 2 --stdout`
+threads=`dialog --inputbox "Number of Threads" 0 0 2 --stdout`
+
+# creating the drive
+qemu-img create -f qcow2 "$vmsDir$vmName/hdd.img" "$driveSize"G
+
+# asking if the user want to attach an iso file
+dialog --yesno "attach an iso file" 0 0 --stdout && isofile=`dialog --inputbox "iso file path" 0 0 --stdout`
+
+# making the config file 
+echo -e "vmName=$vmName\nramSize=$ramSize\ncores=$cores\nthreads=$threads\nisofile=$isofile" > $vmsDir$vmName/.config
+}
+#case $1 in
+#  "--help")
+#esac
+case $menu in
+  "1") 
+    createVM ;;
+  "2") 
+    launchVM ;;
+  "3") 
+    deleteVM ;;
+esac
