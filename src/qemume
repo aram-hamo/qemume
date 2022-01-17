@@ -4,14 +4,15 @@ qemumeDir=~/.local/share/qemume/
 vmsDir=$qemumeDir/vms/
 mkdir -p $qemumeDir $vmsDir
 
-# main menu
 mainMenu(){
+# {{{
 menu=`dialog --menu qemume 0 0 0 1 "Create VM" 2 "Managing Existing VM's"  3 "Quit" --stdout`
 if [ $menu == '1' ]; then
   createVM
 elif [ $menu == '2' ]; then
   manageVMs
 fi
+# }}}
 }
 
 createVM(){
@@ -49,10 +50,9 @@ deleteVM(){
 dialog --yesno "are you sure you want to delete the vm" 0 0 --stdout && rm -rf $vmsDir$vmSelect
 # }}}
 }
-
 manageVMs(){
 # {{{
-vms=`'ls' $vmsDir`
+vms=`'ls' -A $vmsDir`
 vmsWithTags=`id=1 ; for vm in $vms ; do printf "$vm $id " ; id=$(($id+1)); done`
 
 vmSelect=`dialog --menu qemume 0 0 0 $vmsWithTags --stdout`
