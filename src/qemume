@@ -5,9 +5,17 @@ vmsDir=$qemumeDir/vms/
 mkdir -p $qemumeDir $vmsDir
 
 # main menu
-menu=`dialog --menu qemume 0 0 0 1 "Create VM" 2 "Launch VM" 3 "Delete VM" --stdout`
+mainMenu(){
+menu=`dialog --menu qemume 0 0 0 1 "Create VM" 2 "Managing Existing VM's"  3 "Quit" --stdout`
+if [ $menu == '1' ]; then
+  createVM
+elif [ $menu == '2' ]; then
+  manageVMs
+fi
+}
 
 createVM(){
+# {{{
 vmName=`dialog --inputbox "Name of The VM" 0 0 --stdout`
 while :
 do
@@ -31,15 +39,35 @@ dialog --yesno "attach an iso file" 0 0 --stdout && isofile=`dialog --inputbox "
 
 # making the config file 
 echo -e "vmName=$vmName\nramSize=$ramSize\ncores=$cores\nthreads=$threads\nisofile=$isofile" > $vmsDir$vmName/config
+wait
+mainMenu
+# }}}
 }
-#case $1 in
-#  "--help")
-#esac
-case $menu in
-  "1") 
-    createVM ;;
-  "2") 
+
+deleteVM(){
+# {{{
+dialog --yesno "are you sure you want to delete the vm" 0 0 --stdout && rm -rf $vmsDir$vmSelect
+# }}}
+}
+
+manageVMs(){
+# {{{
+vms=`'ls' $vmsDir`
+vmsWithTags=`id=1 ; for vm in $vms ; do printf "$vm $id " ; id=$(($id+1)); done`
+
+vmSelect=`dialog --menu qemume 0 0 0 $vmsWithTags --stdout`
+actionSelect=`dialog --menu "$vmSelect" 0 0 0 1 "Launch The VM" 2 "Delete The VM" --stdout`
+case $actionSelect in
+  "1")
     launchVM ;;
-  "3") 
+  "2")
     deleteVM ;;
 esac
+
+wait
+mainMenu
+# }}}
+}
+
+mainMenu
+# vim: fdm=marker
