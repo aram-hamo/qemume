@@ -30,7 +30,7 @@ qemu-img create -f qcow2 "$vmsDir$vmName/hdd.img" "$driveSize"G
 dialog --yesno "attach an iso file" 0 0 --stdout && isofile=`dialog --inputbox "iso file path" 0 0 --stdout`
 
 # making the config file 
-echo -e "vmName=$vmName\nramSize=$ramSize\ncores=$cores\nthreads=$threads\nisofile=$isofile" > $vmsDir$vmName/.config
+echo -e "vmName=$vmName\nramSize=$ramSize\ncores=$cores\nthreads=$threads\nisofile=$isofile" > $vmsDir$vmName/config
 }
 #case $1 in
 #  "--help")
