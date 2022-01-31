@@ -1,6 +1,6 @@
 #!/bin/bash
 
-qemumeDir=~/.local/share/qemume/
+[ -z $qemumeDir ] && qemumeDir=~/.local/share/qemume/
 vmsDir=$qemumeDir/vms/
 mkdir -p $qemumeDir $vmsDir
 
